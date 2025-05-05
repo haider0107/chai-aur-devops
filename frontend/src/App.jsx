@@ -7,7 +7,7 @@ import chaiLogo from "./assets/chai.svg";
 // Components
 import CourseCard from "./components/CourseCard";
 
-function App() {
+const App = () => {
   const [courses, setCourses] = useState([]);
   const [dataSource, setDataSource] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,7 +15,9 @@ function App() {
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8080/api/v1/courses");
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/courses`
+      );
       const data = await response.json();
       setCourses(data.data);
       setDataSource(data.source);
@@ -50,6 +52,6 @@ function App() {
       <p className="read-the-docs">Home for Programmers</p>
     </>
   );
-}
+};
 
 export default App;

@@ -28,6 +28,25 @@ const App = () => {
     }
   };
 
+  const seedCourse = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/seed`
+      );
+      const data = await response.json();
+
+      console.log(data);
+
+      // setCourses(data.data);
+      // setDataSource(data.source);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <div>
@@ -39,6 +58,11 @@ const App = () => {
       <div className="card">
         <button onClick={fetchCourses} disabled={loading}>
           {loading ? "Loading..." : "View courses"}
+        </button>
+      </div>
+      <div className="card">
+        <button onClick={seedCourse} disabled={loading}>
+          {loading ? "Loading..." : "Seed course"}
         </button>
       </div>
       {dataSource && (

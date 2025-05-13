@@ -4,8 +4,6 @@ services:
   fullstack-db:
     image: mongo:8.0.9
     container_name: fullstack-db
-    ports:
-      - "27017:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
@@ -17,8 +15,6 @@ services:
   fullstack-redis:
     image: redis:8.0.0-alpine
     container_name: fullstack-redis
-    ports:
-      - "6380:6379"
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
     command: redis-server --requirepass ${REDIS_PASSWORD}

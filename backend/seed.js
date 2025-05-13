@@ -38,7 +38,7 @@ const courses = [
   },
 ];
 
-async function seedDatabase() {
+export async function seedDatabase() {
   try {
     await mongoClient.connect();
     const db = mongoClient.db("chaicode");
@@ -56,4 +56,4 @@ async function seedDatabase() {
   }
 }
 
-seedDatabase();
+// seedDatabase();

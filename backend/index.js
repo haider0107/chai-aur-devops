@@ -7,6 +7,7 @@ import { mongoClient } from "./libs/db.js";
 
 // Routes
 import courseRouter from "./routes/course.routes.js";
+import seedRouter from "./routes/seed.routes.js";
 
 dotenv.config();
 
@@ -22,7 +23,6 @@ app.use(
   })
 );
 
-
 app.get("/", (_req, res) => {
   res.status(200).json({
     message: "Welcome to ChaiCode API ☕️",
@@ -30,6 +30,7 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/api/v1/courses", courseRouter);
+app.use("/api/v1/seed", seedRouter);
 
 app.listen(PORT, async () => {
   await mongoClient.connect();

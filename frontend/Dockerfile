@@ -6,8 +6,22 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+# Copy app files
 COPY . .
 
+# Copy wait-for-it
+COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
+
+# Copy entrypoint
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
+# Set permissions
+RUN chmod +x /usr/local/bin/wait-for-it.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 EXPOSE 5173
+
+# Set entrypoint
+ENTRYPOINT ["entrypoint.sh"]
 
 CMD ["npm", "run", "dev"]

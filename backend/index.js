@@ -25,7 +25,7 @@ app.use(
 
 app.get("/", (_req, res) => {
   res.status(200).json({
-    message: "Welcome to ChaiCode API ☕️",
+    message: "Welcome to ChaiCode API ☕️    ",
   });
 });
 

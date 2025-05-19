@@ -29,6 +29,17 @@ app.get("/", (_req, res) => {
   });
 });
 
+app.get("/health", (_req, res) => {
+  res.status(200).json({ alive: true });
+});
+
+app.get("/version", (_req, res) => {
+  res.status(200).json({
+    version: "v1",
+    host: process.env.NODE_HOST,
+  });
+});
+
 app.use("/api/v1/courses", courseRouter);
 app.use("/api/v1/seed", seedRouter);
 

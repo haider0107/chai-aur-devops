@@ -1,12 +1,24 @@
-name: fullstack-devops
-
 services:
   fullstack-db:
     image: mongo:8.0.9
-    container_name: fullstack-db
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo fullstack-db:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_ROOT_USERNAME=chaicode
+      - MONGO_INITDB_ROOT_PASSWORD=chaicode
     volumes:
       - fullstack-db-vol:/data/db
     networks:
@@ -14,51 +26,83 @@ services:
 
   fullstack-redis:
     image: redis:8.0.0-alpine
-    container_name: fullstack-redis
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
     environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-    command: redis-server --requirepass ${REDIS_PASSWORD}
+      - REDIS_PASSWORD=chaicode
+    command: redis-server --requirepass chaicode
     volumes:
-      - fullstack-redis-vol:/data/redis
+      - fullstack-redis-vol:/data
     networks:
       - fullstack-network
 
   fullstack-backend:
-    build:
-      context: ./backend
-    container_name: fullstack-backend
+    image: kushal0107/fullstack-backend:v1
+    deploy:
+      replicas: 2
+      update_config:
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - "--no-verbose"
+        - "--tries=1"
+        - "--spider"
+        - http://localhost:8080/health
     ports:
       - "8080:8080"
-    env_file:
-      - ./backend/.env
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    depends_on:
-      - fullstack-db
-      - fullstack-redis
+    environment:
+      - PORT=8080
+      - MONGO_URL=mongodb://chaicode:chaicode@fullstack-db:27017
+      - REDIS_PASSWORD=chaicode
+      - REDIS_HOST=fullstack-redis
+      - REDIS_PORT=6379
+      - FRONTEND_URL=http://fullstack-frontend:5173
     networks:
       - fullstack-network
 
   fullstack-frontend:
-    build:
-      context: ./frontend
-    container_name: fullstack-frontend
+    image: kushal0107/fullstack-frontend:v1
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     ports:
       - "5173:5173"
-    env_file:
-      - ./frontend/.env
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    depends_on:
-      - fullstack-backend
+    environment:
+      - VITE_BACKEND_URL=http://fullstack-backend:8080
     networks:
       - fullstack-network
 
 networks:
   fullstack-network:
-    driver: bridge
+    driver: overlay
 
 volumes:
   fullstack-db-vol:

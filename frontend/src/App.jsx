@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Assets
 import "./App.css";
@@ -11,6 +11,8 @@ const App = () => {
   const [courses, setCourses] = useState([]);
   const [dataSource, setDataSource] = useState("");
   const [loading, setLoading] = useState(false);
+  const [version, setVersion] = useState("v1");
+  const [host, setHost] = useState("unknown");
 
   const fetchCourses = async () => {
     try {
@@ -37,15 +39,24 @@ const App = () => {
       const data = await response.json();
 
       console.log(data);
-
-      // setCourses(data.data);
-      // setDataSource(data.source);
     } catch (error) {
       console.error("Error fetching courses:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/version`
+      );
+      const data = await response.json();
+
+      setVersion(data.version);
+      setHost(data.host);
+    })();
+  }, []);
 
   return (
     <>
@@ -54,7 +65,9 @@ const App = () => {
           <img src={chaiLogo} className="logo chai code" alt="Chai Code logo" />
         </a>
       </div>
-      <h1>ChaiCode DevOps</h1>
+      <h1>
+        ChaiCode DevOps {version} ({host})
+      </h1>
       <div className="card">
         <button onClick={fetchCourses} disabled={loading}>
           {loading ? "Loading..." : "View courses"}

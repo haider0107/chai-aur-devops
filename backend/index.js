@@ -40,6 +40,17 @@ app.get("/version", (_req, res) => {
   });
 });
 
+app.get("/url", (req, res) => {
+  const fullUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+  console.log("Current URL:", fullUrl);
+
+  res.status(200).json({
+    fullUrl,
+    host: process.env.NODE_HOST,
+  });
+  // res.send("Check your server logs");
+});
+
 app.use("/api/v1/courses", courseRouter);
 app.use("/api/v1/seed", seedRouter);
 

@@ -14,6 +14,11 @@ const App = () => {
   const [version, setVersion] = useState("v1");
   const [host, setHost] = useState("unknown");
 
+  console.log("Full URL:", window.location.href);
+  console.log("Origin:", window.location.origin); // protocol + host
+  console.log("Path:", window.location.pathname); // e.g. /about
+  console.log("Query:", window.location.search);
+
   const fetchCourses = async () => {
     try {
       setLoading(true);

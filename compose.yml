@@ -10,12 +10,6 @@ services:
       rollback_config:
         parallelism: 1
         order: stop-first
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongo fullstack-db:27017/test --quiet
-      interval: 10s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
     environment:
       - MONGO_INITDB_ROOT_USERNAME=chaicode
       - MONGO_INITDB_ROOT_PASSWORD=chaicode
@@ -46,7 +40,7 @@ services:
       - fullstack-network
 
   fullstack-backend:
-    image: kushal0107/fullstack-backend:v1
+    image: kushal0107/fullstack-backend:v1.1
     deploy:
       replicas: 2
       update_config:
@@ -72,12 +66,12 @@ services:
       - REDIS_PASSWORD=chaicode
       - REDIS_HOST=fullstack-redis
       - REDIS_PORT=6379
-      - FRONTEND_URL=http://fullstack-frontend:5173
+      - FRONTEND_URL=http://13.203.226.166:5173
     networks:
       - fullstack-network
 
   fullstack-frontend:
-    image: kushal0107/fullstack-frontend:v1
+    image: kushal0107/fullstack-frontend:v1.1
     deploy:
       replicas: 1
       update_config:
@@ -96,7 +90,7 @@ services:
     ports:
       - "5173:5173"
     environment:
-      - VITE_BACKEND_URL=http://fullstack-backend:8080
+      - VITE_BACKEND_URL=http://13.203.226.166:8080
     networks:
       - fullstack-network
 
